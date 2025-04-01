@@ -15,21 +15,8 @@ namespace Services
         {
             _salesSettings = salesSettings.Value;
         }
-        public Task<List<SalesSummaryByProductDto>> GetSalesSummaryByProductAsync(List<SalesDto> sales)
-        {
-            var summary = from s in sales
-                        group s by new {s.Product } into g
-                        select new SalesSummaryByProductDto
-                        {
-                            Product = g.Key.Product,
-                            TotalSalePrice = g.Sum(x => x.SalePrice.Amount),
-                            TotalManufacturingPrice = g.Sum(x => x.ManufacturingPrice.Amount),
-                        };
 
-            return Task.FromResult(summary.ToList());
-        }
-
-        public async Task<IEnumerable<SalesDto>> GetSalesDataAsync()
+        public async Task<IEnumerable<SalesDataDto>> GetSalesDataAsync()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -44,11 +31,25 @@ namespace Services
             using (var reader = new StreamReader(_salesSettings.SalesDataPath, Encoding.GetEncoding(1252)))
             using (var csv = new CsvReader(reader, csvConfiguration))
             {
-                csv.Context.RegisterClassMap<SalesDtoMap>();
+                csv.Context.RegisterClassMap<SalesDataDtoMap>();
 
-                var records = csv.GetRecords<SalesDto>().ToList();
+                var records = csv.GetRecords<SalesDataDto>().ToList();
                 return await Task.FromResult(records);
             }
+        }
+
+        public Task<List<SalesSummaryByProductDto>> GetSalesSummaryByProductAsync(List<SalesDataDto> sales)
+        {
+            var summary = from sale in sales
+                        group sale by new {sale.Product } into productGroup
+                        select new SalesSummaryByProductDto
+                        {
+                            Product = productGroup.Key.Product,
+                            TotalSalePrice = productGroup.Sum(x => x.SalePrice.Amount),
+                            TotalManufacturingPrice = productGroup.Sum(x => x.ManufacturingPrice.Amount),
+                        };
+
+            return Task.FromResult(summary.ToList());
         }
     }
 }

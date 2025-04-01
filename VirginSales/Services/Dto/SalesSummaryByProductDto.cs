@@ -1,4 +1,4 @@
-﻿namespace Services
+﻿namespace Services.Dto
 {
     public class SalesSummaryByProductDto
     {

@@ -35,20 +35,20 @@
 </MudPaper>
 
 @code {
-    private IEnumerable<SalesDto> salesData;
-    private List<SalesSummaryByProductDto> summaryData;
+    private IEnumerable<SalesDataDto> salesData;
+    private List<SalesSummaryByProductDto> salesSummary;
     private List<ChartSeries> Series;
     private string[] XAxisLabels;
 
     protected override async Task OnInitializedAsync()
     {
         salesData = await salesService.GetSalesDataAsync();
-        summaryData = await salesService.GetSalesSummaryByProductAsync(salesData.ToList());
+        salesSummary = await salesService.GetSalesSummaryByProductAsync(salesData.ToList());
 
-        double[] manufacturingData = summaryData.Select(s => (double)s.TotalManufacturingPrice).ToArray();
-        double[] salePriceData = summaryData.Select(s => (double)s.TotalSalePrice).ToArray();
+        double[] manufacturingData = salesSummary.Select(s => (double)s.TotalManufacturingPrice).ToArray();
+        double[] salePriceData = salesSummary.Select(s => (double)s.TotalSalePrice).ToArray();
 
-        XAxisLabels = summaryData.Select(s => s.Product).ToArray();
+        XAxisLabels = salesSummary.Select(s => s.Product).ToArray();
 
         Series = new List<ChartSeries>()
         {

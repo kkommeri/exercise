@@ -4,7 +4,7 @@ namespace Services
 {
     public interface ISalesService
     {
-        Task<IEnumerable<SalesDto>> GetSalesDataAsync();
-        Task<List<SalesSummaryByProductDto>> GetSalesSummaryByProductAsync(List<SalesDto> sales);
+        Task<IEnumerable<SalesDataDto>> GetSalesDataAsync();
+        Task<List<SalesSummaryByProductDto>> GetSalesSummaryByProductAsync(List<SalesDataDto> sales);
     }
 }

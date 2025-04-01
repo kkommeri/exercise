@@ -20,7 +20,7 @@ namespace Services.Tests
         }
 
         [Fact]
-        public async Task GetSalesDtoAsync_ReturnsCorrectData()
+        public async Task GetSalesDataAsync_ShouldReturnsAllSalesFromCSV()
         {
             // Arrange
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -54,10 +54,10 @@ namespace Services.Tests
         }
 
         [Fact]
-        public async Task GetSalesSummaryDtoAsync_ReturnsCorrectData()
+        public async Task GetSalesSummaryByProductAsync_ShoulReturnAllSalesGroupedByProduct()
         {
             // Arrange
-            var sales = new List<SalesDto>() {
+            var sales = new List<SalesDataDto>() {
                     new() { Product = "Carretera", SalePrice = new Money(20, "GBP"), ManufacturingPrice = new Money(3, "GBP") },
                     new() { Product = "Carretera", SalePrice = new Money(30, "GBP"), ManufacturingPrice = new Money(5, "GBP") },
                     new() { Product = "Montana", SalePrice = new Money(40, "GBP"), ManufacturingPrice = new Money(10, "GBP") },
