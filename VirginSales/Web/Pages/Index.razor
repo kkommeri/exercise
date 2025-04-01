@@ -1,0 +1,62 @@
+﻿@page "/"
+
+@using Services
+@using Services.Dto
+@using MudBlazor
+@using MudBlazor.Charts
+
+@inject ISalesService salesService
+
+<MudText Typo="Typo.h5">Sales Data</MudText>
+<br/>
+<MudPaper Style="height:50vh; overflow-y:auto;">
+    <MudTable Items="salesData" Hover="true" Dense="true" FixedHeader="true" Bordered="true" Striped="true">
+        <HeaderContent>
+            <MudTh>Segment</MudTh>
+            <MudTh>Country</MudTh>
+            <MudTh>Product</MudTh>
+            <MudTh>Discount Band</MudTh>
+            <MudTh class="text-right">Units Sold</MudTh>
+            <MudTh class="text-right">Manufacturing Price</MudTh>
+            <MudTh class="text-right">Sale Price</MudTh>
+            <MudTh>Date</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Segment">@context.Segment</MudTd>
+            <MudTd DataLabel="Country">@context.Country</MudTd>
+            <MudTd DataLabel="Product">@context.Product</MudTd>
+            <MudTd DataLabel="Discount Band">@context.DiscountBand</MudTd>
+            <MudTd DataLabel="Units Sold" class="text-right">@context.UnitsSold</MudTd>
+            <MudTd DataLabel="Manufacturing Price" class="text-right">@context.ManufacturingPrice</MudTd>
+            <MudTd DataLabel="Sale Price" class="text-right">@context.SalePrice</MudTd>
+            <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private IEnumerable<SalesDto> salesData;
+    private List<SalesSummaryByProductDto> summaryData;
+    private List<ChartSeries> Series;
+    private string[] XAxisLabels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        salesData = await salesService.GetSalesDataAsync();
+        summaryData = await salesService.GetSalesSummaryByProductAsync(salesData.ToList());
+
+        double[] manufacturingData = summaryData.Select(s => (double)s.TotalManufacturingPrice).ToArray();
+        double[] salePriceData = summaryData.Select(s => (double)s.TotalSalePrice).ToArray();
+
+        XAxisLabels = summaryData.Select(s => s.Product).ToArray();
+
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = "Total Manufacturing Price", Data = manufacturingData },
+            new ChartSeries() { Name = "Total Sale Price", Data = salePriceData }
+        };
+    }
+}
+<br/>
+<MudText Typo="Typo.h5">Comparison of Total Sales Price and Total Manufacturing Price by Product</MudText>
+<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" />
